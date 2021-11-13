@@ -1,3 +1,5 @@
+const { expect } = require("@jest/globals");
+
 describe('Basic user flow for Website', () => {
   // First, visit the lab 8 website
   beforeAll(async () => {
@@ -72,6 +74,18 @@ describe('Basic user flow for Website', () => {
     // Query select all of the <product-item> elements, then for every single product element
     // get the shadowRoot and query select the button inside, and click on it.
     // Check to see if the innerText of #cart-count is 20
+
+    const prodItems = await page.$$('product-item');
+    for(let i = 1; i < prodItems.length; i++) {
+      let shadowRoot = await prodItems[i].getProperty('shadowRoot');
+      let button = await shadowRoot.$('button');
+      await button.click();
+    }
+
+    let cartCountElement = await page.$('#cart-count');
+    let cartCount = await cartCountElement.getProperty('innerText');
+    let cartCountValue = cartCount['_remoteObject'].value;
+    expect(cartCountValue).toBe('20');
   }, 10000);
 
   // Check to make sure that after you reload the page it remembers all of the items in your cart
